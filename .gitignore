@@ -55,6 +55,3 @@ Thumbs.db
 # Firebase
 firebase-debug.log
 database-debug.log
-
-# Service Account Keys and other sensitive JSON
-*.json

@@ -26,9 +26,6 @@ jobs:
       - name: Build Angular application
         run: ng build --configuration production
 
-      - name: List files in root directory
-        run: ls -la
-
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
