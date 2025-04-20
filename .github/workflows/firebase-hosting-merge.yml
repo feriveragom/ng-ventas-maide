@@ -18,10 +18,13 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci # Usa el lockfile para instalaciones consistentes
+        run: npm ci # Mantenemos npm ci
+
+      - name: Install Angular CLI globally
+        run: npm install -g @angular/cli
 
       - name: Build Angular application
-        run: ng build --configuration production # Crea la build de producción
+        run: ng build --configuration production
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
