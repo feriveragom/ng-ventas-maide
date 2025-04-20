@@ -225,10 +225,22 @@ El desarrollo se organiza en las siguientes fases:
     *   Configuración para servir la aplicación Angular (reglas de reescritura para SPA).
     *   Aprovechamiento de SSL/TLS automático y CDN global.
     *   Optimización de cabeceras de caché.
-*   **Despliegue Continuo:**
-    *   Configuración de GitHub Actions para escuchar cambios en `main`.
-    *   Pasos automatizados: checkout, instalación de dependencias, build de producción, despliegue a Firebase.
-    *   Notificaciones sobre el estado del despliegue.
+*   **Despliegue Continuo (GitHub Actions):**
+    *   **Activación:** El despliegue a Firebase Hosting se activa automáticamente cada vez que se realiza un `push` a la rama principal (`main`).
+    *   **Workflow:** La lógica del despliegue está definida en el archivo `.github/workflows/firebase-hosting-merge.yml`. Este workflow se encarga de:
+        1.  Obtener el código fuente (`checkout`).
+        2.  Configurar Node.js.
+        3.  Instalar las dependencias (`npm ci`).
+        4.  Construir la aplicación Angular para producción (`ng build --configuration production`).
+        5.  Desplegar los artefactos de build en Firebase Hosting usando la acción `FirebaseExtended/action-hosting-deploy@v0`.
+    *   **Archivos de Configuración:**
+        *   `firebase.json`: Define la configuración de Firebase Hosting, incluyendo el directorio público (`dist/ng-ventas-maide/browser`) y las reglas de reescritura para la SPA.
+        *   `.firebaserc`: Vincula el repositorio local con el proyecto `ng-ventas-maide` en Firebase.
+    *   **Autenticación Segura:** El workflow se autentica con Firebase de forma segura utilizando una clave de cuenta de servicio. Esta clave debe ser almacenada como un secreto en la configuración del repositorio de GitHub:
+        *   Ir a `Settings` > `Secrets and variables` > `Actions`.
+        *   Crear un secreto llamado `FIREBASE_SERVICE_ACCOUNT_NG_VENTAS_MAIDE`.
+        *   El valor del secreto debe ser el contenido completo del archivo JSON de la clave de cuenta de servicio generada desde Google Cloud Console (IAM & Admin > Service Accounts).
+    *   **Monitorización:** El progreso y los resultados de cada despliegue se pueden monitorizar en la pestaña `Actions` del repositorio de GitHub.
 
 ## 🤝 Contribuciones
 
@@ -243,15 +255,3 @@ Si bien este es primordialmente un proyecto académico personal, las sugerencias
 ## 📞 Soporte y Contacto
 
 Para preguntas técnicas, sugerencias o reporte de problemas, por favor, abrir un "Issue" en el repositorio oficial de GitHub del proyecto.
-
----
-
-## 📝 Estado Actual de Configuración (Nota Interna)
-
-*   **Proyecto Firebase:** Creado (`ng-ventas-maide`).
-*   **Servicios Firebase Habilitados:** Cloud Firestore (Modo Producción, Ubicación definida), Authentication (Proveedor Email/Password habilitado).
-*   **App Web Registrada:** Registrada en Firebase, configuración obtenida.
-*   **Archivos de Entorno Angular:** Creados (`src/environments/environment.ts`, `src/environments/environment.prod.ts`) y contienen la configuración de Firebase (`firebaseConfig`).
-*   **Librería AngularFire:** Instalada (`npm install @angular/fire`).
-*   **Configuración AngularFire:** Realizada en `src/app/app.config.ts` (importando y añadiendo `provideFirebaseApp`, `provideAuth`, `provideFirestore` a los `providers`).
-*   **Próximo Paso:** Adaptar los servicios reutilizados de `ng-shape-up` (empezando por `AuthService` en `src/app/auth/services/auth.service.ts`) para usar los servicios de Firebase (`AngularFireAuth`, `AngularFirestore`) en lugar de la lógica en memoria/localStorage.

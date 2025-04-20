@@ -40,3 +40,21 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Existing Angular/Node ignores (if any, keep them)
+# ...
+
+# IDE files / System files
+.idea
+*.iml
+*.hprof
+*.orig
+*.js.map
+*.css.map
+
+# Firebase
+firebase-debug.log
+database-debug.log
+
+# Service Account Keys and other sensitive JSON
+*.json

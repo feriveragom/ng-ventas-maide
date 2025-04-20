@@ -1,0 +1,5 @@
+{
+  "projects": {
+    "default": "ng-ventas-maide" // Tu ID de proyecto Firebase
+  }
+} 
