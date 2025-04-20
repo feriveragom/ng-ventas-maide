@@ -267,3 +267,40 @@ Si bien este es primordialmente un proyecto académico personal, las sugerencias
 ## 📞 Soporte y Contacto
 
 Para preguntas técnicas, sugerencias o reporte de problemas, por favor, abrir un "Issue" en el repositorio oficial de GitHub del proyecto.
+
+## 🚧 Estado Actual y Próximos Pasos (Abril 20, 2025)
+
+Esta sección documenta el estado del proyecto al momento de la pausa actual en el desarrollo guiado.
+
+**Objetivo Actual:** Implementar la visualización básica de una lista de productos leídos desde Cloud Firestore.
+
+**Estado:**
+
+1.  **Configuración Base:**
+    *   Proyecto Angular 19 (`ng-ventas-maide`) inicializado.
+    *   Firebase (Firestore, Authentication, Hosting) configurado en la consola.
+    *   Configuración de Firebase integrada en Angular (`environment.ts`, `app.config.ts`).
+    *   Despliegue Continuo (CD) a Firebase Hosting configurado mediante GitHub Actions (`.github/workflows/firebase-hosting-merge.yml`, `firebase.json`, `.firebaserc`, Secreto de GitHub). El despliegue automático a `https://ng-ventas-maide.web.app/` está funcionando.
+    *   Archivos de reglas (`firestore.rules`, `storage.rules`) y de índices (`firestore.indexes.json`) añadidos a la raíz del proyecto (con contenido inicial/de prueba).
+
+2.  **Funcionalidad Catálogo (En Progreso):**
+    *   **Modelo de Datos:** Interfaz `Product` definida y comentada en `src/app/features/products/models/product.model.ts`.
+    *   **Datos de Prueba:** Se añadieron manualmente documentos de ejemplo a la colección `products` en Cloud Firestore a través de la consola web.
+    *   **Servicio:** `ProductService` generado en `src/app/features/products/services/product.service.ts` y actualizado con el método `getProducts()` para leer la colección `products` usando `collectionData` de AngularFire (incluyendo `idField`).
+    *   **Componente:** `ProductListComponent` (standalone) generado en `src/app/features/products/pages/product-list/` y actualizado (`.ts` y `.html`) con la lógica para inyectar `ProductService`, obtener el `Observable` de productos y mostrar una lista básica usando `async` pipe y `*ngFor`.
+
+**Tareas Inmediatas Pendientes (Para Continuar):**
+
+1.  **Configurar Enrutado:**
+    *   Definir una ruta (ej: `/catalog` o `/products`) en `src/app/app.routes.ts` que cargue de forma diferida (lazy load) el `ProductListComponent` standalone.
+2.  **Navegación:**
+    *   Añadir un enlace temporal en `src/app/app.component.html` (o en un futuro componente de layout/header) para poder navegar a la nueva ruta del catálogo.
+3.  **Verificación:**
+    *   Ejecutar `ng serve` y verificar que al navegar a la nueva ruta, se muestre la lista de productos leídos desde Firestore (usando los datos de prueba añadidos manualmente).
+
+**Siguientes Fases (Según Roadmap):**
+
+*   Implementar funcionalidad CRUD completa para productos (crear, actualizar, eliminar desde la UI).
+*   Adaptar e integrar módulos de autenticación y administración desde `ng-shape-up`.
+*   Refinar diseño (responsive, Material/Tailwind).
+*   Ajustar reglas de seguridad de Firestore/Storage.

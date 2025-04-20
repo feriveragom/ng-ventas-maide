@@ -1,0 +1,92 @@
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-6 p-6 bg-white rounded-lg shadow-md">
+
+  <!-- Campo Nombre -->
+  <div>
+    <label for="name" class="block text-sm font-medium text-gray-700">Nombre del Producto</label>
+    <input type="text" id="name" formControlName="name"
+           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+           [ngClass]="{ 'border-red-500': f['name'].invalid && (f['name'].dirty || f['name'].touched) }">
+    <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="text-red-600 text-sm mt-1">
+      <div *ngIf="f['name'].errors?.['required']">El nombre es requerido.</div>
+      <div *ngIf="f['name'].errors?.['minlength']">Debe tener al menos 3 caracteres.</div>
+    </div>
+  </div>
+
+  <!-- Campo Descripción -->
+  <div>
+    <label for="description" class="block text-sm font-medium text-gray-700">Descripción</label>
+    <textarea id="description" formControlName="description" rows="3"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+  </div>
+
+  <!-- Fila Precio y Stock -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Campo Precio -->
+    <div>
+      <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
+      <input type="number" id="price" formControlName="price" min="0.01" step="0.01"
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+             [ngClass]="{ 'border-red-500': f['price'].invalid && (f['price'].dirty || f['price'].touched) }">
+      <div *ngIf="f['price'].invalid && (f['price'].dirty || f['price'].touched)" class="text-red-600 text-sm mt-1">
+        <div *ngIf="f['price'].errors?.['required']">El precio es requerido.</div>
+        <div *ngIf="f['price'].errors?.['min']">El precio debe ser mayor que 0.</div>
+      </div>
+    </div>
+
+    <!-- Campo Stock -->
+    <div>
+      <label for="stockQuantity" class="block text-sm font-medium text-gray-700">Cantidad en Stock</label>
+      <input type="number" id="stockQuantity" formControlName="stockQuantity" min="0"
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+             [ngClass]="{ 'border-red-500': f['stockQuantity'].invalid && (f['stockQuantity'].dirty || f['stockQuantity'].touched) }">
+       <div *ngIf="f['stockQuantity'].invalid && (f['stockQuantity'].dirty || f['stockQuantity'].touched)" class="text-red-600 text-sm mt-1">
+         <div *ngIf="f['stockQuantity'].errors?.['min']">El stock no puede ser negativo.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fila Categoría y URL Imagen -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Campo Categoría -->
+    <div>
+      <label for="categoryId" class="block text-sm font-medium text-gray-700">Categoría</label>
+      <select id="categoryId" formControlName="categoryId"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              [ngClass]="{ 'border-red-500': f['categoryId'].invalid && (f['categoryId'].dirty || f['categoryId'].touched) }">
+        <option value="" disabled>Selecciona una categoría...</option>
+        <!-- Usamos async pipe para obtener las categorías del observable -->
+        <option *ngFor="let category of categories$ | async" [value]="category.id">
+          {{ category.name }}
+        </option>
+      </select>
+      <div *ngIf="f['categoryId'].invalid && (f['categoryId'].dirty || f['categoryId'].touched)" class="text-red-600 text-sm mt-1">
+        <div *ngIf="f['categoryId'].errors?.['required']">La categoría es requerida.</div>
+      </div>
+    </div>
+
+    <!-- Campo URL Imagen -->
+    <div>
+      <label for="imageUrl" class="block text-sm font-medium text-gray-700">URL de la Imagen</label>
+      <input type="url" id="imageUrl" formControlName="imageUrl"
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      <!-- Podríamos añadir validación de URL aquí -->
+    </div>
+  </div>
+
+  <!-- Campo Deshabilitado -->
+  <div class="flex items-center">
+    <input id="isDisabled" type="checkbox" formControlName="isDisabled"
+           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+    <label for="isDisabled" class="ml-2 block text-sm text-gray-900">Producto Deshabilitado</label>
+  </div>
+
+
+  <!-- Botón de Envío -->
+  <div>
+    <button type="submit" [disabled]="productForm.invalid"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+      {{ isEditMode ? 'Actualizar Producto' : 'Crear Producto' }}
+    </button>
+  </div>
+
+</form>

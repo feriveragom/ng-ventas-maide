@@ -1,0 +1,73 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-gray-700">Administrar Productos</h2>
+    <a routerLink="/admin/products/new"
+       class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
+      + Crear Nuevo Producto
+    </a>
+  </div>
+
+  <!-- Contenedor para manejar estados de carga y error -->
+  <ng-container *ngIf="productsWithCategories$ | async as state">
+
+    <!-- Estado de Carga -->
+    <div *ngIf="state.loading" class="text-center py-12">
+      <p class="text-xl text-gray-500">Cargando productos...</p>
+      <!-- Aquí podrías añadir un spinner -->
+    </div>
+
+    <!-- Estado de Error -->
+    <div *ngIf="state.error" class="text-center py-12 text-red-600 bg-red-100 p-4 rounded">
+      <p class="text-xl">Error: {{ state.error }}</p>
+    </div>
+
+    <!-- Estado con Datos -->
+    <div *ngIf="!state.loading && !state.error">
+
+      <!-- Caso: No hay productos -->
+      <div *ngIf="state.data.length === 0" class="text-center py-12 text-gray-500">
+        <p class="text-xl">No hay productos para mostrar.</p>
+      </div>
+
+      <!-- Caso: Hay productos (Tabla) -->
+      <div *ngIf="state.data.length > 0" class="overflow-x-auto shadow-md rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Habilitado</th>
+              <th scope="col" class="relative px-6 py-3">
+                <span class="sr-only">Acciones</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let product of state.data" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+                <div class="text-sm text-gray-500">{{ product.sku || '-' }}</div> <!-- Muestra SKU si existe -->
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.categoryName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.price | currency:'USD' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.stockQuantity ?? 'N/A' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      [ngClass]="product.isDisabled ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
+                  {{ product.isDisabled ? 'No' : 'Sí' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <button (click)="navigateToEdit(product.id)" class="text-indigo-600 hover:text-indigo-900">Editar</button>
+                <button (click)="deleteProduct(product.id)" class="text-red-600 hover:text-red-900">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </ng-container> <!-- Fin de ng-container *ngIf="productsWithCategories$ | async as state" -->
+</div>

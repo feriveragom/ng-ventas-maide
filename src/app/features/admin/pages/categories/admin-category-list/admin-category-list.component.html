@@ -1,0 +1,58 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-gray-700">Administrar Categorías</h2>
+    <a routerLink="/admin/categories/new"
+       class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
+      + Crear Nueva Categoría
+    </a>
+  </div>
+
+  <!-- Contenedor para manejar estados -->
+  <ng-container *ngIf="categoriesState$ | async as state">
+
+    <!-- Estado de Carga -->
+    <div *ngIf="state.loading" class="text-center py-12">
+      <p class="text-xl text-gray-500">Cargando categorías...</p>
+    </div>
+
+    <!-- Estado de Error -->
+    <div *ngIf="state.error" class="text-center py-12 text-red-600 bg-red-100 p-4 rounded">
+      <p class="text-xl">Error: {{ state.error }}</p>
+    </div>
+
+    <!-- Estado con Datos -->
+    <div *ngIf="!state.loading && !state.error">
+
+      <!-- Caso: No hay categorías -->
+      <div *ngIf="state.data.length === 0" class="text-center py-12 text-gray-500">
+        <p class="text-xl">No hay categorías para mostrar.</p>
+      </div>
+
+      <!-- Caso: Hay categorías (Tabla) -->
+      <div *ngIf="state.data.length > 0" class="overflow-x-auto shadow-md rounded-lg max-w-2xl mx-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+              <th scope="col" class="relative px-6 py-3">
+                <span class="sr-only">Acciones</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let category of state.data" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ category.name }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <button (click)="navigateToEdit(category.id)" class="text-indigo-600 hover:text-indigo-900">Editar</button>
+                <button (click)="deleteCategory(category.id)" class="text-red-600 hover:text-red-900">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </ng-container>
+</div>
