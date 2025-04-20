@@ -217,30 +217,42 @@ El desarrollo se organiza en las siguientes fases:
 
 ### Integración Específica con Firebase
 
+Esta sección detalla cómo los diferentes servicios de Firebase se configuran e integran en el proyecto.
+
 *   **Cloud Firestore:**
-    *   Definición de una estructura de datos NoSQL eficiente.
-    *   Implementación de reglas de seguridad para controlar el acceso a los datos.
-    *   Consideración de estrategias de backup (manuales o automatizadas).
-*   **Hosting:**
-    *   Configuración para servir la aplicación Angular (reglas de reescritura para SPA).
-    *   Aprovechamiento de SSL/TLS automático y CDN global.
-    *   Optimización de cabeceras de caché.
+    *   Se utiliza como la base de datos NoSQL principal.
+    *   La estructura de datos debe ser eficiente y escalable.
+    *   **Seguridad:** Es crucial implementar reglas de seguridad robustas. Ver descripción de `firestore.rules` abajo.
+    *   **Rendimiento:** Para consultas complejas, pueden ser necesarios índices compuestos. Ver nota sobre `firestore.indexes.json` abajo.
+    *   **Backups:** Considerar estrategias de backup (manuales o automatizadas vía Google Cloud).
+
+*   **Firebase Authentication:**
+    *   Gestiona la identidad y sesión de los usuarios.
+    *   Configurado inicialmente con el proveedor "Correo electrónico/Contraseña".
+    *   Integrado en Angular a través de los proveedores en `app.config.ts`.
+
+*   **Firebase Hosting:**
+    *   Sirve la aplicación Angular compilada.
+    *   Configurado para funcionar como Single Page Application (SPA) mediante reglas de reescritura.
+    *   Beneficios: SSL/TLS automático, CDN global.
+    *   **Despliegue:** Automatizado mediante GitHub Actions (ver detalles abajo).
+
+*   **Firebase Cloud Storage:** (Si se utiliza para imágenes u otros archivos)
+    *   Almacenamiento de objetos escalable.
+    *   **Seguridad:** Requiere configuración de reglas de seguridad. Ver descripción de `storage.rules` abajo.
+
+*   **Archivos de Configuración Principales (Raíz del Proyecto):**
+    *   `firebase.json`: Define la configuración para Firebase CLI, principalmente para Hosting (directorio público `dist/ng-ventas-maide/browser`, reglas de reescritura). También puede incluir configuraciones para desplegar reglas de Firestore y Storage si se desea. *Verificar que `public` coincida con `outputPath` en `angular.json`*.
+    *   `.firebaserc`: Vincula el directorio local con el proyecto `ng-ventas-maide` en Firebase.
+    *   `firestore.rules`: **(¡IMPORTANTE!)** Define las reglas de seguridad para **Cloud Firestore**. Especifica quién puede leer, escribir o modificar los datos. Es crucial configurar reglas adecuadas para proteger la base de datos. El archivo inicial puede contener reglas permisivas de prueba; deben ajustarse antes de producción o uso con datos reales.
+    *   `storage.rules`: Define las reglas de seguridad para **Firebase Cloud Storage**. Especifica quién puede subir, descargar o eliminar archivos (ej. imágenes de productos). Similar a Firestore, las reglas iniciales deben revisarse y ajustarse por seguridad.
+    *   `firestore.indexes.json`: Define los **índices compuestos** necesarios para optimizar el rendimiento de consultas complejas en Firestore (ej. filtrar por un campo y ordenar por otro diferente). Se inicia vacío y se rellena a medida que la aplicación requiere dichos índices.
+
 *   **Despliegue Continuo (GitHub Actions):**
     *   **Activación:** El despliegue a Firebase Hosting se activa automáticamente cada vez que se realiza un `push` a la rama principal (`main`).
-    *   **Workflow:** La lógica del despliegue está definida en el archivo `.github/workflows/firebase-hosting-merge.yml`. Este workflow se encarga de:
-        1.  Obtener el código fuente (`checkout`).
-        2.  Configurar Node.js.
-        3.  Instalar las dependencias (`npm ci`).
-        4.  Construir la aplicación Angular para producción (`ng build --configuration production`).
-        5.  Desplegar los artefactos de build en Firebase Hosting usando la acción `FirebaseExtended/action-hosting-deploy@v0`.
-    *   **Archivos de Configuración:**
-        *   `firebase.json`: Define la configuración de Firebase Hosting, incluyendo el directorio público (`dist/ng-ventas-maide/browser`) y las reglas de reescritura para la SPA.
-        *   `.firebaserc`: Vincula el repositorio local con el proyecto `ng-ventas-maide` en Firebase.
-    *   **Autenticación Segura:** El workflow se autentica con Firebase de forma segura utilizando una clave de cuenta de servicio. Esta clave debe ser almacenada como un secreto en la configuración del repositorio de GitHub:
-        *   Ir a `Settings` > `Secrets and variables` > `Actions`.
-        *   Crear un secreto llamado `FIREBASE_SERVICE_ACCOUNT_NG_VENTAS_MAIDE`.
-        *   El valor del secreto debe ser el contenido completo del archivo JSON de la clave de cuenta de servicio generada desde Google Cloud Console (IAM & Admin > Service Accounts).
-    *   **Monitorización:** El progreso y los resultados de cada despliegue se pueden monitorizar en la pestaña `Actions` del repositorio de GitHub.
+    *   **Workflow:** La lógica del despliegue está definida en el archivo `.github/workflows/firebase-hosting-merge.yml`. Este workflow se encarga de construir la aplicación y desplegarla a Hosting. *(Pasos: checkout, setup node, install deps, install ng-cli global, build, deploy).*
+    *   **Autenticación Segura:** Usa un secreto de GitHub (`FIREBASE_SERVICE_ACCOUNT_NG_VENTAS_MAIDE`) que contiene una clave de cuenta de servicio de Google Cloud para autenticarse con Firebase. *(Obtener clave de GCloud Console IAM > Service Accounts, guardar en GitHub Settings > Secrets and variables > Actions)*.
+    *   **Monitorización:** El progreso se ve en la pestaña `Actions` de GitHub.
 
 ## 🤝 Contribuciones
 

@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// Reglas iniciales para Firebase Storage (copiadas de ng-shape-up).
+// Actualmente, niegan toda lectura y escritura (muy seguras pero inútiles).
+// Deberás modificarlas para permitir acceso según tus necesidades
+// (p. ej., permitir lectura pública de imágenes, escritura solo para admins autenticados).
+// Ejemplo (permitir lectura pública, escritura solo si autenticado):
+// service firebase.storage {
+//   match /b/{bucket}/o {
+//     match /{allPaths=**} {
+//       allow read; // Cualquiera puede leer
+//       allow write: if request.auth != null; // Solo usuarios autenticados pueden escribir
+//     }
+//   }
+// }
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false; // Regla original copiada (denegar todo)
+    }
+  }
+} 

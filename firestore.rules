@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // REGLAS INICIALES (Modo Test - ¡INSEGURAS A LARGO PLAZO!)
+    // Estas reglas permiten lectura/escritura por cualquiera hasta una fecha límite.
+    // Fueron copiadas de ng-shape-up y probablemente estaban en modo desarrollo/test.
+    // *** ES CRUCIAL reemplazarlas por reglas seguras antes de usar datos reales. ***
+    // Ejemplo básico seguro (requiere autenticación para todo):
+    // match /{document=**} {
+    //   allow read, write: if request.auth != null;
+    // }
+    // Regla original copiada (solo como referencia inicial):
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2025, 5, 10); // <-- ¡Fecha límite de ejemplo! Ajustar o cambiar regla.
+    }
+  }
+} 
