@@ -1,5 +1,7 @@
 # 🛍️ ng-ventas-maide: Catálogo Digital de Productos
 
+**URL de Despliegue:** [https://ng-ventas-maide.web.app/](https://ng-ventas-maide.web.app/)
+
 ## 📚 Introducción
 
 `ng-ventas-maide` es una aplicación web de catálogo de productos desarrollada con Angular 19. Este proyecto tiene un propósito fundamentalmente académico, diseñado para explorar, implementar y demostrar las capacidades avanzadas del framework Angular moderno, incluyendo el uso de Signals para la gestión del estado y Lazy Loading para la optimización del rendimiento.
@@ -13,11 +15,15 @@
 
 ### ✨ Características Destacadas
 
-*   **Catálogo Público:** Visualización accesible de productos para todos los visitantes.
-*   **Diseño Responsive:** Adaptación fluida a diferentes tamaños de pantalla utilizando Angular Material y TailwindCSS.
+*   **Catálogo Público:** Visualización accesible y responsive de productos para todos los visitantes.
+*   **Diseño Responsive:** Adaptación fluida a diferentes tamaños de pantalla utilizando Angular Material y **TailwindCSS**.
 *   **Interfaz Moderna:** Tema claro (fondo blanco, acentos amarillo/negro) para una experiencia de usuario limpia.
-*   **Autenticación y Gestión:** Sistema de autenticación (inicio de sesión, registro, recuperación de contraseña) y panel de administración de usuarios/roles reutilizados del proyecto `ng-shape-up`.
-*   **Gestión de Productos:** Funcionalidad CRUD (Crear, Leer, Actualizar, Eliminar) para la administración del catálogo.
+*   **Autenticación (Parcialmente Integrada):** Sistema de autenticación (inicio de sesión) basado en **Firebase Authentication**. La integración de registro y recuperación de contraseña, reutilizada de `ng-shape-up`, está pendiente o en progreso.
+    *   *Credenciales de Prueba (Superusuario):* `superusuario@firebase.com` / `firebase.com`
+*   **Gestión de Productos y Categorías:**
+    *   Funcionalidad **CRUD** (Crear, Leer, Actualizar, Eliminar) implementada para **productos** y **categorías** utilizando **Cloud Firestore** como backend.
+    *   Interfaz de administración con **tablas avanzadas (`MatTable`)** que incluyen **filtrado**, **ordenación** por columnas y **paginación**.
+    *   Diseño **responsive** para las tablas de administración, permitiendo **scroll horizontal** en pantallas pequeñas.
 
 ## 🛠️ Especificaciones Técnicas
 
@@ -35,11 +41,13 @@
 
 ### Aspectos Técnicos Relevantes
 
-*   **Arquitectura Modular:** Implementación de Lazy Loading para optimizar la carga inicial y mejorar el rendimiento.
-*   **Gestión de Estado Reactiva:** Uso de Signals para una gestión eficiente y granular del estado de los componentes.
-*   **Diseño Adaptativo:** Enfoque "Mobile-First" garantizando una experiencia óptima en dispositivos móviles.
-*   **Integración con Firebase:** Aprovechamiento de los servicios de Firebase para base de datos, autenticación, hosting y despliegue continuo.
-*   **Testing:** Configuración simplificada (sin archivos `.spec` por defecto, enfoque en pruebas E2E si se requieren).
+*   **Arquitectura Modular:** Implementación de **Lazy Loading** para los módulos principales (`products`, `admin`) y componentes individuales (ej. `LoginComponent`), optimizando la carga inicial.
+*   **Gestión de Estado Reactiva:** Uso de **Signals** para la gestión del estado local de los componentes y **RxJS (Observables, combineLatest, forkJoin)** para manejar flujos de datos asíncronos desde Firebase.
+*   **Diseño Adaptativo:** Enfoque "Mobile-First" utilizando **TailwindCSS** y componentes responsivos de Angular Material, garantizando una experiencia óptima en dispositivos móviles y de escritorio.
+*   **Integración con Firebase:** Aprovechamiento completo de los servicios de Firebase para base de datos (**Cloud Firestore** para productos, categorías, etc.), autenticación (**Firebase Authentication** para gestión de usuarios) y hosting (**Firebase Hosting** para despliegue).
+*   **Componentes UI Avanzados:** Uso de **Angular Material**, destacando `MatTable` para la visualización y gestión de datos tabulares con funcionalidades interactivas (sort, paginación, filtro).
+*   **Seguridad Frontend:** Implementación de **rutas protegidas** (`CanActivate`) utilizando `authGuard` para restringir el acceso a secciones administrativas (`/admin`) solo a usuarios autenticados.
+*   **Testing:** Configuración simplificada (enfoque en desarrollo, sin archivos `.spec` por defecto).
 
 ## 🏗️ Arquitectura del Proyecto
 
@@ -153,10 +161,11 @@ El desarrollo se organiza en las siguientes fases:
 *   [x] Configuración del proyecto Firebase (Firestore, Auth).
 *   [x] Integración de la configuración de Firebase en Angular.
 *   [x] Diseño responsive y tema visual (Material/Tailwind).
-*   [ ] Implementación del catálogo público de productos (visualización).
-*   [ ] Adaptación e integración del módulo de autenticación reutilizado de `ng-shape-up` (Servicios, Guards, Componentes).
+*   [x] Implementación del catálogo público de productos (visualización con categorías y estado de stock).
+*   [ ] Adaptación e integración del módulo de autenticación reutilizado de `ng-shape-up` (Login funcional, Registro/Recuperación pendientes).
 *   [ ] Adaptación e integración del panel de administración de usuarios/roles reutilizado de `ng-shape-up`.
-*   [ ] Desarrollo de la funcionalidad CRUD para productos (Firestore).
+*   [x] Desarrollo de la funcionalidad CRUD para productos y categorías (Firestore, formularios básicos).
+*   [x] Implementación de tablas avanzadas (`MatTable`) para gestión de productos/categorías.
 *   [ ] Configuración del despliegue continuo en Firebase (GitHub Actions).
 
 ### Fase 2 (Futura)
@@ -220,14 +229,14 @@ El desarrollo se organiza en las siguientes fases:
 Esta sección detalla cómo los diferentes servicios de Firebase se configuran e integran en el proyecto.
 
 *   **Cloud Firestore:**
-    *   Se utiliza como la base de datos NoSQL principal.
+    *   Se utiliza como la base de datos NoSQL principal para almacenar los datos de **productos**, **categorías** y potencialmente otros datos de la aplicación.
     *   La estructura de datos debe ser eficiente y escalable.
     *   **Seguridad:** Es crucial implementar reglas de seguridad robustas. Ver descripción de `firestore.rules` abajo.
     *   **Rendimiento:** Para consultas complejas, pueden ser necesarios índices compuestos. Ver nota sobre `firestore.indexes.json` abajo.
     *   **Backups:** Considerar estrategias de backup (manuales o automatizadas vía Google Cloud).
 
 *   **Firebase Authentication:**
-    *   Gestiona la identidad y sesión de los usuarios.
+    *   Gestiona la identidad y sesión de los usuarios (login, registro, etc.).
     *   Configurado inicialmente con el proveedor "Correo electrónico/Contraseña".
     *   Integrado en Angular a través de los proveedores en `app.config.ts`.
 
