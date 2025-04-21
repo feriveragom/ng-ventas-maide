@@ -1,1 +1,8 @@
-<p>create-category-page works!</p>
+<h2 class="text-2xl font-bold mb-4">Crear Nueva Categoría</h2>
+
+<app-category-form (save)="handleSave($event)"></app-category-form>
+
+<!-- Mensajes de estado (puedes usar ngIf para mostrarlos condicionalmente) -->
+<!-- <p *ngIf="isLoading">Guardando...</p> -->
+<!-- <p *ngIf="error" class="text-red-500">Error al guardar: {{ error }}</p> -->
+<!-- <p *ngIf="success" class="text-green-500">Categoría guardada exitosamente.</p> -->

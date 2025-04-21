@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common'; // Para *ngIf
 
 // Componentes y Servicios
-import { ProductFormComponent } from '../../../components/product-form/product-form.component';
+import { ProductFormComponent, ProductSaveEvent } from '../../../components/product-form/product-form.component';
 import { ProductService } from '../../../../products/services/product.service'; // Ajustar ruta
 import { Product } from '../../../../products/models/product.model'; // Ajustar ruta
 
@@ -26,30 +26,40 @@ export class CreateProductPageComponent {
   successMessage: string | null = null;
 
   // Método llamado cuando ProductFormComponent emite el evento (save)
-  async handleSave(productData: Partial<Product>): Promise<void> {
+  async handleSave(event: ProductSaveEvent): Promise<void> {
+    const { productData, imageBase64 } = event;
+
     this.isLoading = true;
     this.errorMessage = null;
     this.successMessage = null;
-    console.log('Recibido para guardar:', productData);
+    console.log('Recibido para guardar:', productData, 'Base64:', imageBase64 ? imageBase64.substring(0, 50)+'...': 'null');
+
+    // Preparamos los datos finales para Firestore
+    const finalProductData: Omit<Product, 'id'> = {
+      ...(productData as Omit<Product, 'id'>),
+      imageUrl: imageBase64 ?? undefined // Añadir Base64 como imageUrl (o undefined si es null)
+    };
 
     try {
-      // Llamamos al servicio para añadir el producto
-      // Asegurarse de que productData sea compatible con Omit<Product, 'id'>
-      // Si 'id' viene en productData (aunque no debería desde el form), hay que quitarlo.
-      // Por simplicidad ahora, asumimos que el form no genera 'id'.
-      const docRef = await this.productService.addProduct(productData as Omit<Product, 'id'>);
+      // Pasar los datos combinados al servicio
+      const docRef = await this.productService.addProduct(finalProductData);
       console.log('Producto añadido con ID:', docRef.id);
+
       this.successMessage = '¡Producto creado exitosamente!';
       this.isLoading = false;
 
-      // Opcional: Redirigir a la lista de admin después de un breve retraso
       setTimeout(() => {
         this.router.navigate(['/admin/products']);
-      }, 1500); // Espera 1.5 segundos
+      }, 1500);
 
     } catch (error: any) {
       this.isLoading = false;
-      this.errorMessage = `Error al crear el producto: ${error?.message || 'Error desconocido'}`;
+      // Considerar error específico si falla por tamaño de documento (Firestore 1MB limit)
+      if (error.message?.includes('maximum size')) {
+         this.errorMessage = 'Error: El tamaño total del producto (incluyendo la imagen) excede el límite de Firestore (1MB). Intenta con una imagen más pequeña.';
+      } else {
+        this.errorMessage = `Error al crear el producto: ${error?.message || 'Error desconocido'}`;
+      }
       console.error('Error en handleSave:', error);
     }
   }

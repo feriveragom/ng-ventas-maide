@@ -25,11 +25,28 @@
 
         <!-- Detalles del Producto -->
         <div class="p-4">
-          <h2 class="text-lg font-semibold text-gray-800 mb-2 truncate" [title]="product.name">
+          <h2 class="text-lg font-semibold text-gray-800 mb-1 truncate" [title]="product.name">
             {{ product.name }}
           </h2>
-          <p class="text-xl font-bold text-yellow-500 mb-4">
-            {{ product.price | currency:'USD':'symbol':'1.2-2' }} <!-- Ajusta la moneda/formato según necesites -->
+          <!-- Categoría -->
+          <p class="text-sm text-gray-500 mb-2">
+            {{ product.categoryName ?? 'Sin categoría' }}
+          </p>
+          <!-- Estado del Stock -->
+          <div class="text-sm mb-2">
+            <span *ngIf="product.stockQuantity && product.stockQuantity > 0" class="text-green-600 font-medium">
+              Disponible: {{ product.stockQuantity }}
+            </span>
+            <span *ngIf="!product.stockQuantity || product.stockQuantity <= 0" class="text-red-600 font-medium">
+              Agotado
+            </span>
+          </div>
+          <!-- Precio -->
+          <p class="text-xl font-bold text-primary-dark mb-4"
+             [class.line-through]="!product.stockQuantity || product.stockQuantity <= 0"
+             [class.decoration-yellow-500]="!product.stockQuantity || product.stockQuantity <= 0"
+             [class.decoration-4]="!product.stockQuantity || product.stockQuantity <= 0">
+            {{ product.price | currency:'USD':'symbol':'1.2-2' }}
           </p>
           <!-- Puedes añadir más detalles o botones aquí -->
           <!-- Ejemplo de botón (requiere lógica adicional):

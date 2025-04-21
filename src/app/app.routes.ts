@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { AdminLayoutComponent } from './features/admin/layouts/admin-layout/admin-layout.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -14,8 +15,13 @@ export const routes: Routes = [
       {
         path: 'admin',
         component: AdminLayoutComponent, // Usar AdminLayoutComponent como contenedor
+        canActivate: [authGuard],
         loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
         // Las rutas de ADMIN_ROUTES (products, categories) ahora serán hijas de AdminLayout
+      },
+      {
+        path: 'login',
+        loadComponent: () => import('./features/auth/pages/login/login.component').then(m => m.LoginComponent)
       },
       // Aquí podrías añadir otras secciones principales lazy-loaded (ej: admin, auth)
       // {
@@ -29,6 +35,12 @@ export const routes: Routes = [
       }
     ]
   },
+  // Ruta de Login movida arriba
+  // {
+  //   path: 'login',
+  //   loadComponent: () => import('./features/auth/pages/login/login.component').then(m => m.LoginComponent)
+  // },
+
   // Aquí podrías añadir rutas que NO usen MainLayoutComponent, como una página de login/registro independiente
   // {
   //   path: 'auth',

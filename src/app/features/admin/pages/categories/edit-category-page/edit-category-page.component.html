@@ -1,1 +1,17 @@
-<p>edit-category-page works!</p>
+<h2 class="text-2xl font-bold mb-4">Editar Categoría</h2>
+
+<ng-container *ngIf="category$ | async as category; else loadingOrError">
+  <app-category-form [category]="category" (save)="handleSave($event)"></app-category-form>
+
+  <!-- Mensajes de estado para la actualización -->
+  <!-- <p *ngIf="isUpdating">Actualizando...</p> -->
+  <!-- <p *ngIf="updateError" class="text-red-500">Error al actualizar: {{ updateError }}</p> -->
+  <!-- <p *ngIf="updateSuccess" class="text-green-500">Categoría actualizada exitosamente.</p> -->
+
+</ng-container>
+
+<ng-template #loadingOrError>
+  <!-- Puedes diferenciar entre carga y error si tienes estados separados -->
+  <p *ngIf="!(category$ | async)">Cargando datos de la categoría...</p>
+  <!-- Manejo de error si category$ emite un error -->
+</ng-template>

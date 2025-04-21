@@ -1,6 +1,9 @@
 <div class="flex flex-col min-h-screen">
-  <app-header></app-header>
-  <main class="flex-grow">
+  <app-header 
+    [isAuthenticated]="isAuthenticated$ | async" 
+    (logoutClicked)="logout()"
+  ></app-header>
+  <main class="flex-grow px-4 py-8">
     <router-outlet></router-outlet>
   </main>
   <app-footer></app-footer>

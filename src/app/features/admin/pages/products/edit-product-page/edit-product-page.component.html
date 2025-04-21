@@ -1,1 +1,21 @@
-<p>edit-product-page works!</p>
+<h2 class="text-2xl font-bold mb-4">Editar Producto</h2>
+
+<ng-container *ngIf="product$ | async as product; else loadingOrError">
+  <app-product-form
+    *ngIf="product"
+    [product]="product"
+    (save)="handleSave($event)"
+  ></app-product-form>
+  <!-- Display message if product is null/undefined after async pipe (might indicate not found or other issues) -->
+  <p *ngIf="!product && !errorMessage">Producto no encontrado o inválido.</p>
+</ng-container>
+
+<ng-template #loadingOrError>
+  <p *ngIf="errorMessage" class="text-red-500">{{ errorMessage }}</p>
+  <p *ngIf="!errorMessage && !(product$ | async)">Cargando datos del producto...</p>
+</ng-template>
+
+<!-- Mensajes de estado para la actualización -->
+<p *ngIf="isUpdating" class="text-blue-500 mt-4">Actualizando...</p>
+<p *ngIf="updateError" class="text-red-500 mt-4">{{ updateError }}</p>
+<p *ngIf="updateSuccess" class="text-green-500 mt-4">Producto actualizado exitosamente.</p>

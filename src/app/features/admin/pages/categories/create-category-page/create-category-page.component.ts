@@ -1,15 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-// Componentes y Servicios
-// import { CategoryFormComponent } from './category-form.component'; // Comentado temporalmente
+import { CategoryFormComponent } from '../category-form.component';
 import { CategoryService } from '../../../../../core/services/category.service';
 import { Category } from '../../../../products/models/category.model';
 
 @Component({
   selector: 'app-create-category-page',
   standalone: true,
-  imports: [CommonModule], // Quitamos CategoryFormComponent temporalmente
+  imports: [CommonModule, CategoryFormComponent],
   templateUrl: './create-category-page.component.html',
   styleUrls: ['./create-category-page.component.scss']
 })
@@ -21,8 +20,6 @@ export class CreateCategoryPageComponent {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  // Comentamos handleSave ya que depende del formulario
-  /*
   async handleSave(categoryData: Partial<Category>): Promise<void> {
     this.isLoading = true;
     this.errorMessage = null;
@@ -42,5 +39,4 @@ export class CreateCategoryPageComponent {
       console.error('Error en handleSave (Category):', error);
     }
   }
-  */
 }

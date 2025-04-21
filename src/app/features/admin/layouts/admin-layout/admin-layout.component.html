@@ -1,33 +1,8 @@
-<div class="flex h-screen bg-gray-100">
-  <!-- Sidebar -->
-  <aside class="w-64 bg-gray-800 text-gray-100 flex flex-col">
-    <div class="p-4 text-xl font-semibold border-b border-gray-700">Admin Panel</div>
-    <nav class="flex-grow mt-4">
-      <ul>
-        <li>
-          <a routerLink="./products" routerLinkActive="bg-gray-700" 
-             [routerLinkActiveOptions]="{ exact: false }" 
-             class="block px-4 py-2 hover:bg-gray-700 rounded mx-2 transition-colors duration-200">
-            📦 Productos
-          </a>
-        </li>
-        <li>
-          <a routerLink="./categories" routerLinkActive="bg-gray-700" 
-             [routerLinkActiveOptions]="{ exact: false }"
-             class="block px-4 py-2 hover:bg-gray-700 rounded mx-2 transition-colors duration-200">
-            🏷️ Categorías
-          </a>
-        </li>
-        <!-- Más enlaces de admin aquí -->
-      </ul>
-    </nav>
-    <div class="p-4 border-t border-gray-700">
-      <a routerLink="/productos" class="block text-center text-sm hover:text-yellow-400">Volver al Catálogo</a>
-    </div>
-  </aside>
-
-  <!-- Contenido Principal -->
-  <main class="flex-1 overflow-y-auto p-8">
-    <router-outlet></router-outlet> <!-- Aquí se cargan las páginas de admin (listas, forms) -->
+<!-- Layout simplificado, solo contiene el área principal para el contenido de admin -->
+<div class="flex-1 flex flex-col"> 
+  <!-- Eliminado el header móvil específico del admin -->
+  <main class="flex-1 overflow-y-auto p-6 md:p-8">
+    <router-outlet></router-outlet> <!-- Aquí se cargan las páginas de admin -->
   </main>
 </div>
+<!-- Eliminado el sidebar (<aside>) y el overlay -->

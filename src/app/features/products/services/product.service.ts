@@ -51,26 +51,36 @@ export class ProductService {
     return docData<Product>(productDocRef as DocumentReference<Product>, { idField: 'id' });
   }
 
-  /** Añade un nuevo producto a la colección */
+  /**
+   * Añade un nuevo producto a la colección (incluyendo imageUrl si se proporciona).
+   * @param productData Los datos del producto (sin id), puede incluir imageUrl (Base64).
+   * @returns Promise<DocumentReference<Product>> Referencia al documento creado.
+   */
   addProduct(productData: Omit<Product, 'id'>): Promise<DocumentReference<Product>> {
-    // addDoc añade un nuevo documento con un ID generado automáticamente.
-    // Asegúrate que los datos en productData coincidan con la interfaz Product (excepto 'id').
-    // Podríamos añadir timestamps aquí si es necesario (ej. { ...productData, createdAt: serverTimestamp() })
+    // Simplemente añade los datos tal como vienen (incluyendo imageUrl si existe)
+    console.log('Añadiendo producto a Firestore:', { ...productData, imageUrl: productData.imageUrl ? productData.imageUrl.substring(0, 50) + '...' : 'null' });
     return addDoc(this.productsCollection, productData);
   }
 
-  /** Actualiza un producto existente */
+  /**
+   * Actualiza un producto existente (incluyendo imageUrl si se proporciona).
+   * @param id El ID del producto a actualizar.
+   * @param productData Los datos parciales del producto a actualizar, puede incluir imageUrl (Base64).
+   * @returns Promise<void>
+   */
   updateProduct(id: string, productData: Partial<Product>): Promise<void> {
-    const productDocRef = doc(this.firestore, `products/${id}`);
-    // updateDoc actualiza los campos especificados en productData.
-    // Usa Partial<Product> para permitir actualizaciones parciales.
-    // Podríamos añadir un timestamp de actualización aquí (ej. { ...productData, updatedAt: serverTimestamp() })
-    return updateDoc(productDocRef as DocumentReference<Product>, productData);
+    const productDocRef = doc(this.firestore, `products/${id}`) as DocumentReference<Product>;
+    console.log('Actualizando producto en Firestore:', id, { ...productData, imageUrl: productData.imageUrl ? productData.imageUrl.substring(0, 50) + '...' : 'null/undefined' });
+    // Simplemente actualiza los campos proporcionados en productData
+    return updateDoc(productDocRef, productData);
   }
 
   /** Elimina un producto por su ID */
   deleteProduct(id: string): Promise<void> {
     const productDocRef = doc(this.firestore, `products/${id}`);
+    // TODO: Si estamos usando Base64, no hay imagen externa que borrar.
+    // Pero si eventualmente se vuelve a Cloud Storage, habría que añadir aquí
+    // la lógica para obtener la imageUrl del producto y borrarla de Storage.
     return deleteDoc(productDocRef);
   }
 }
