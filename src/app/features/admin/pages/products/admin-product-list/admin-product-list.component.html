@@ -13,83 +13,76 @@
     <input matInput (keyup)="applyFilter($event)" placeholder="Ej: Zapatos" #input>
   </mat-form-field>
 
-  <!-- Contenedor para habilitar scroll horizontal en móvil -->
-  <div class="overflow-x-auto">
-    <!-- Contenedor para la tabla y el paginador con elevación -->
-    <div class="mat-elevation-z4 rounded-lg overflow-hidden mb-4"> 
-      <!-- NOTA: Se movió mb-4 aquí desde el paginador si estaba allí, o se puede añadir si es necesario -->
-      <!-- Añadir clase de elevación y overflow hidden -->
+  <!-- Contenedor específico con clase para aplicar estilos CSS -->
+  <div>
+    <table mat-table [dataSource]="dataSource" matSort class="w-full">
+      
+      <!-- Columna Imagen -->
+      <ng-container matColumnDef="imageUrl">
+        <th mat-header-cell *matHeaderCellDef class="!text-left !pl-6"> Imagen </th>
+        <td mat-cell *matCellDef="let product" class="!pl-6">
+           <img *ngIf="product.imageUrl" [src]="product.imageUrl" alt="{{ product.name }}" class="h-10 w-10 rounded object-cover">
+           <div *ngIf="!product.imageUrl" class="h-10 w-10 rounded bg-gray-200 flex items-center justify-center text-gray-400 text-xs">N/A</div>
+        </td>
+      </ng-container>
 
-      <table mat-table [dataSource]="dataSource" matSort class="w-full min-w-[700px]">
-        <!-- NOTA: Añadido min-w-[700px] (o un valor adecuado) a la tabla para asegurar que el scroll aparezca -->
+      <!-- Columna Nombre (Ordenable) -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por nombre" class="!text-left"> Nombre </th>
+        <td mat-cell *matCellDef="let product">
+          <div class="font-medium">{{ product.name }}</div>
+        </td>
+      </ng-container>
 
-        <!-- Columna Imagen -->
-        <ng-container matColumnDef="imageUrl">
-          <th mat-header-cell *matHeaderCellDef class="!text-left !pl-6"> Imagen </th>
-          <td mat-cell *matCellDef="let product" class="!pl-6">
-             <img *ngIf="product.imageUrl" [src]="product.imageUrl" alt="{{ product.name }}" class="h-10 w-10 rounded object-cover">
-             <div *ngIf="!product.imageUrl" class="h-10 w-10 rounded bg-gray-200 flex items-center justify-center text-gray-400 text-xs">N/A</div>
-          </td>
-        </ng-container>
+      <!-- Columna Categoría (Ordenable) -->
+      <ng-container matColumnDef="categoryName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por categoría" class="!text-left"> Categoría </th>
+        <td mat-cell *matCellDef="let product" class="text-gray-600"> {{ product.categoryName ?? 'N/A' }} </td>
+      </ng-container>
 
-        <!-- Columna Nombre (Ordenable) -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por nombre" class="!text-left"> Nombre </th>
-          <td mat-cell *matCellDef="let product">
-            <div class="font-medium">{{ product.name }}</div>
-          </td>
-        </ng-container>
+      <!-- Columna Precio (Ordenable) -->
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por precio" class="!text-right"> Precio </th>
+        <td mat-cell *matCellDef="let product" class="!text-right"> {{ product.price | currency:'USD' }} </td>
+      </ng-container>
 
-        <!-- Columna Categoría (Ordenable) -->
-        <ng-container matColumnDef="categoryName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por categoría" class="!text-left"> Categoría </th>
-          <td mat-cell *matCellDef="let product" class="text-gray-600"> {{ product.categoryName ?? 'N/A' }} </td>
-        </ng-container>
+      <!-- Columna Stock (Ordenable) -->
+      <ng-container matColumnDef="stockQuantity">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por stock" class="!text-right"> Stock </th>
+        <td mat-cell *matCellDef="let product" class="!text-right"> {{ product.stockQuantity ?? 0 }} </td>
+      </ng-container>
 
-        <!-- Columna Precio (Ordenable) -->
-        <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por precio" class="!text-right"> Precio </th>
-          <td mat-cell *matCellDef="let product" class="!text-right"> {{ product.price | currency:'USD' }} </td>
-        </ng-container>
+      <!-- Columna Acciones -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="!text-right !pr-6"> Acciones </th>
+        <td mat-cell *matCellDef="let product" class="!text-right !pr-6 space-x-1">
+           <button mat-icon-button color="primary" (click)="navigateToEdit(product.id)" aria-label="Editar producto">
+              <mat-icon>edit</mat-icon>
+           </button>
+           <button mat-icon-button color="warn" (click)="deleteProduct(product.id)" aria-label="Eliminar producto">
+              <mat-icon>delete</mat-icon>
+           </button>
+        </td>
+      </ng-container>
 
-        <!-- Columna Stock (Ordenable) -->
-        <ng-container matColumnDef="stockQuantity">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por stock" class="!text-right"> Stock </th>
-          <td mat-cell *matCellDef="let product" class="!text-right"> {{ product.stockQuantity ?? 0 }} </td>
-        </ng-container>
+      <!-- Definición de Filas -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
 
-        <!-- Columna Acciones -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="!text-right !pr-6"> Acciones </th>
-          <td mat-cell *matCellDef="let product" class="!text-right !pr-6 space-x-1">
-             <button mat-icon-button color="primary" (click)="navigateToEdit(product.id)" aria-label="Editar producto">
-                <mat-icon>edit</mat-icon>
-             </button>
-             <button mat-icon-button color="warn" (click)="deleteProduct(product.id)" aria-label="Eliminar producto">
-                <mat-icon>delete</mat-icon>
-             </button>
-          </td>
-        </ng-container>
+      <!-- Fila a mostrar cuando no hay datos que coincidan con el filtro -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell py-4 text-center text-gray-500" [attr.colspan]="displayedColumns.length">
+          No se encontraron productos que coincidan con el filtro "{{input.value}}".
+        </td>
+      </tr>
+    </table>
 
-        <!-- Definición de Filas -->
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
-
-        <!-- Fila a mostrar cuando no hay datos que coincidan con el filtro -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell py-4 text-center text-gray-500" [attr.colspan]="displayedColumns.length">
-            No se encontraron productos que coincidan con el filtro "{{input.value}}".
-          </td>
-        </tr>
-      </table>
-
-      <!-- Paginador -->
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
-                     showFirstLastButtons 
-                     aria-label="Seleccionar página de productos">
-      </mat-paginator>
-    </div> <!-- Fin div mat-elevation-z4 -->
-  </div> <!-- Fin div overflow-x-auto -->
+    <!-- Paginador -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                   showFirstLastButtons 
+                   aria-label="Seleccionar página de productos">
+    </mat-paginator>
+  </div>
 
   <!-- Mensaje si la carga inicial falló (ya no usamos state aquí) -->
   <!-- TODO: Mostrar error de carga inicial si es necesario -->
