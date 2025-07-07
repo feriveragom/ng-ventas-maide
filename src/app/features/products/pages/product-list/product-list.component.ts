@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Observable, tap, catchError, of, combineLatest, map } from 'rxjs';
-import { AsyncPipe, CurrencyPipe, NgFor, NgIf } from '@angular/common';
+import { Observable, tap, catchError, of, combineLatest, map, switchMap, BehaviorSubject } from 'rxjs';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
 
 import { Product } from '../../models/product.model';
 import { Category } from '../../models/category.model';
@@ -17,8 +17,6 @@ interface ProductWithCategory extends Product {
   standalone: true,
   imports: [
     AsyncPipe,
-    NgFor,
-    NgIf,
     CurrencyPipe
   ],
   templateUrl: './product-list.component.html',
@@ -27,52 +25,80 @@ interface ProductWithCategory extends Product {
 export class ProductListComponent implements OnInit {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
-  
+
   public products$: Observable<ProductWithCategory[]>;
+  public categories$: Observable<Category[]>;
   public isLoading = true;
   public error: string | null = null;
 
+  // BehaviorSubject para manejar el filtro de categoría seleccionado
+  private selectedCategoryId$ = new BehaviorSubject<string | undefined>(undefined);
+  public selectedCategoryId: string | undefined = undefined;
+
   constructor() {
     this.products$ = of([]);
+    this.categories$ = of([]);
   }
 
   ngOnInit(): void {
-    console.log('ProductListComponent: ngOnInit - Intentando obtener productos y categorías...');
     this.isLoading = true;
     this.error = null;
 
-    // Usar combineLatest para obtener productos y categorías simultáneamente
-    this.products$ = combineLatest([
-      this.productService.getProducts(),
-      this.categoryService.getCategories()
-    ]).pipe(
+    // Observable de categorías
+    this.categories$ = this.categoryService.getCategories().pipe(
+      catchError((err) => {
+        console.error('Error al cargar categorías:', err);
+        return of([]);
+      })
+    );
+
+    // Combinar el filtro de categoría con los productos usando switchMap
+    this.products$ = this.selectedCategoryId$.pipe(
+      switchMap((categoryId) => {
+        // Combinar productos filtrados con categorías
+        return combineLatest([
+          this.productService.getEnabledProducts(categoryId),
+          this.categories$
+        ]);
+      }),
       map(([products, categories]) => {
         // Crear mapa de categorías por ID
         const categoryMap = new Map(categories.map(cat => [cat.id, cat.name]));
-        
+
         // Añadir el nombre de la categoría a cada producto
         return products.map(product => ({
           ...product,
           categoryName: categoryMap.get(product.categoryId) || 'Sin categoría'
         }));
       }),
-      tap(productsWithCategory => {
+      tap(() => {
         this.isLoading = false;
-        console.log('ProductListComponent: Productos con categorías recibidos! 🎉', productsWithCategory);
-        if (productsWithCategory.length === 0) {
-          console.log('ProductListComponent: La lista de productos está vacía.');
-        }
       }),
       catchError((err: any) => {
         this.isLoading = false;
         this.error = 'Ocurrió un error al cargar los productos o categorías.';
-        console.error('ProductListComponent: Error al obtener productos/categorías 🚨', err);
+        console.error('Error al obtener productos/categorías:', err);
         return of([]);
       })
     );
   }
 
+  /**
+   * Maneja el cambio de filtro de categoría
+   * @param event - Evento del select
+   */
+  onCategoryFilterChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const rawValue = selectElement.value;
+    // Si el valor es string vacío, lo convertimos a undefined
+    const categoryId = (rawValue && rawValue.trim() !== '') ? rawValue : undefined;
+
+    this.selectedCategoryId = categoryId;
+    this.selectedCategoryId$.next(categoryId);
+  }
+
   onImageError(event: Event): void {
-    console.error('Error al cargar la imagen:', (event.target as HTMLImageElement).src);
+    // Opcional: Manejar errores de imagen de manera silenciosa
+    // o mostrar imagen por defecto
   }
 }

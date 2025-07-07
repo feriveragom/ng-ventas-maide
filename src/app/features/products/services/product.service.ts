@@ -10,8 +10,10 @@ import {
   deleteDoc,
   DocumentReference,
   CollectionReference,
+  query,
+  where,
 } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 import { Product } from '../models/product.model'; // Asegúrate que la ruta sea correcta
 
 @Injectable({
@@ -34,6 +36,7 @@ export class ProductService {
    * Obtiene un Observable que emite un array de todos los productos
    * de la colección 'products' en Firestore.
    * Incluye el ID del documento en cada objeto producto.
+   * USO: Para panel de administración (muestra todos los productos)
    * @returns Observable<Product[]>
    */
   getProducts(): Observable<Product[]> {
@@ -41,6 +44,33 @@ export class ProductService {
     // La opción { idField: 'id' } es crucial: mapea automáticamente el ID
     // del documento de Firestore al campo 'id' de nuestra interfaz Product.
     return collectionData<Product>(this.productsCollection, { idField: 'id' });
+  }
+
+  /**
+   * Obtiene un Observable que emite un array de productos habilitados (no deshabilitados)
+   * de la colección 'products' en Firestore.
+   * USO: Para catálogo público (solo productos habilitados)
+   * @param categoryId - ID de categoría opcional para filtrar por categoría específica
+   * @returns Observable<Product[]>
+   */
+  getEnabledProducts(categoryId?: string): Observable<Product[]> {
+    // ESTRATEGIA TEMPORAL: Solo filtrar por isDisabled en servidor,
+    // y filtrar por categoría en cliente para evitar índice compuesto
+    const enabledQuery = query(
+      this.productsCollection,
+      where('isDisabled', '!=', true)
+    );
+
+    return collectionData<Product>(enabledQuery, { idField: 'id' }).pipe(
+      map(products => {
+        // Filtrar por categoría en el cliente si se especifica
+        if (categoryId && categoryId.trim() !== '') {
+          return products.filter(product => product.categoryId === categoryId);
+        } else {
+          return products;
+        }
+      })
+    );
   }
 
   /** Obtiene un producto específico por su ID */
@@ -58,7 +88,6 @@ export class ProductService {
    */
   addProduct(productData: Omit<Product, 'id'>): Promise<DocumentReference<Product>> {
     // Simplemente añade los datos tal como vienen (incluyendo imageUrl si existe)
-    console.log('Añadiendo producto a Firestore:', { ...productData, imageUrl: productData.imageUrl ? productData.imageUrl.substring(0, 50) + '...' : 'null' });
     return addDoc(this.productsCollection, productData);
   }
 
@@ -70,7 +99,6 @@ export class ProductService {
    */
   updateProduct(id: string, productData: Partial<Product>): Promise<void> {
     const productDocRef = doc(this.firestore, `products/${id}`) as DocumentReference<Product>;
-    console.log('Actualizando producto en Firestore:', id, { ...productData, imageUrl: productData.imageUrl ? productData.imageUrl.substring(0, 50) + '...' : 'null/undefined' });
     // Simplemente actualiza los campos proporcionados en productData
     return updateDoc(productDocRef, productData);
   }

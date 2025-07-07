@@ -3,8 +3,8 @@
     <!-- Iconos/Enlaces Izquierda -->
     <ul class="flex items-center space-x-3 md:space-x-4">
       <li>
-        <a routerLink="/productos" 
-           class="flex items-center font-bold text-primary-yellow cursor-pointer hover:text-yellow-300 transition-colors duration-200" 
+        <a routerLink="/productos"
+           class="flex items-center font-bold text-primary-yellow cursor-pointer hover:text-yellow-300 transition-colors duration-200"
            title="Catálogo">
            <!-- Icono Catálogo -->
            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 md:w-5 md:h-5">
@@ -15,10 +15,10 @@
         </a>
       </li>
       <!-- Enlaces Admin (solo si está autenticado) -->
-      <ng-container *ngIf="isAuthenticated">
+      @if (isAuthenticated) {
         <li>
-          <a routerLink="/admin/products" 
-             class="flex items-center font-bold text-primary-yellow cursor-pointer hover:text-yellow-300 transition-colors duration-200" 
+          <a routerLink="/admin/products"
+             class="flex items-center font-bold text-primary-yellow cursor-pointer hover:text-yellow-300 transition-colors duration-200"
              title="Productos">
             <!-- Icono Productos -->
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 md:w-5 md:h-5">
@@ -28,8 +28,8 @@
           </a>
         </li>
         <li>
-          <a routerLink="/admin/categories" 
-             class="flex items-center font-bold text-primary-yellow cursor-pointer hover:text-yellow-300 transition-colors duration-200" 
+          <a routerLink="/admin/categories"
+             class="flex items-center font-bold text-primary-yellow cursor-pointer hover:text-yellow-300 transition-colors duration-200"
              title="Categorías">
             <!-- Icono Categorías (Tag) -->
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 md:w-5 md:h-5">
@@ -39,33 +39,37 @@
             <span class="hidden md:inline ml-1 text-lg">Categorías</span>
           </a>
         </li>
-      </ng-container>
+      }
     </ul>
 
     <!-- Iconos/Botones Derecha -->
     <div class="flex items-center space-x-3 md:space-x-4">
       <!-- Botón/Enlace Login -->
-      <a *ngIf="!isAuthenticated" routerLink="/login"
-         class="inline-flex items-center bg-primary-yellow hover:bg-yellow-300 text-primary-dark font-semibold py-1 px-2 md:px-3 rounded text-sm transition-colors duration-200"
-         title="Iniciar Sesión">
-         <!-- Icono Login -->
-         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-         </svg>
-         <!-- Texto Oculto en Móvil -->
-         <span class="hidden md:inline ml-1">Iniciar Sesión</span>
-      </a>
+      @if (!isAuthenticated) {
+        <a routerLink="/login"
+           class="inline-flex items-center bg-primary-yellow hover:bg-yellow-300 text-primary-dark font-semibold py-1 px-2 md:px-3 rounded text-sm transition-colors duration-200"
+           title="Iniciar Sesión">
+           <!-- Icono Login -->
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+           </svg>
+           <!-- Texto Oculto en Móvil -->
+           <span class="hidden md:inline ml-1">Iniciar Sesión</span>
+        </a>
+      }
       <!-- Botón Logout -->
-      <button *ngIf="isAuthenticated" (click)="onLogoutClick()"
-              class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-2 md:px-3 rounded text-sm transition-colors duration-200"
-              title="Cerrar Sesión">
-              <!-- Icono Logout -->
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H9" />
-              </svg>
-              <!-- Texto Oculto en Móvil -->
-              <span class="hidden md:inline ml-1">Cerrar Sesión</span>
-      </button>
+      @if (isAuthenticated) {
+        <button (click)="onLogoutClick()"
+                class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-2 md:px-3 rounded text-sm transition-colors duration-200"
+                title="Cerrar Sesión">
+                <!-- Icono Logout -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H9" />
+                </svg>
+                <!-- Texto Oculto en Móvil -->
+                <span class="hidden md:inline ml-1">Cerrar Sesión</span>
+        </button>
+      }
     </div>
   </nav>
 </header>

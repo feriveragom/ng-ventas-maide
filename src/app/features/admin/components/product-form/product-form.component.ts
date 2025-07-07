@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common'; // Para *ngIf, *ngFor en el template
+import { AsyncPipe, NgClass } from '@angular/common';
 import { Observable } from 'rxjs';
 
 // Modelos y Servicios
@@ -17,8 +17,8 @@ export interface ProductSaveEvent {
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  // Importamos módulos necesarios para el template (Formularios Reactivos y directivas comunes)
-  imports: [ReactiveFormsModule, CommonModule],
+  // Importamos solo las pipes y directivas necesarias (más eficiente que CommonModule)
+  imports: [ReactiveFormsModule, AsyncPipe, NgClass],
   templateUrl: './product-form.component.html',
   styleUrls: ['./product-form.component.scss'] // Corregido styleUrl a styleUrls
 })

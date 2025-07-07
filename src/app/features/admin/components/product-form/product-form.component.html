@@ -6,10 +6,16 @@
     <input type="text" id="name" formControlName="name"
            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
            [ngClass]="{ 'border-red-500': f['name'].invalid && (f['name'].dirty || f['name'].touched) }">
-    <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="text-red-600 text-sm mt-1">
-      <div *ngIf="f['name'].errors?.['required']">El nombre es requerido.</div>
-      <div *ngIf="f['name'].errors?.['minlength']">Debe tener al menos 3 caracteres.</div>
-    </div>
+    @if (f['name'].invalid && (f['name'].dirty || f['name'].touched)) {
+      <div class="text-red-600 text-sm mt-1">
+        @if (f['name'].errors?.['required']) {
+          <div>El nombre es requerido.</div>
+        }
+        @if (f['name'].errors?.['minlength']) {
+          <div>Debe tener al menos 3 caracteres.</div>
+        }
+      </div>
+    }
   </div>
 
   <!-- Campo Descripción -->
@@ -27,10 +33,16 @@
       <input type="number" id="price" formControlName="price" min="0.01" step="0.01"
              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
              [ngClass]="{ 'border-red-500': f['price'].invalid && (f['price'].dirty || f['price'].touched) }">
-      <div *ngIf="f['price'].invalid && (f['price'].dirty || f['price'].touched)" class="text-red-600 text-sm mt-1">
-        <div *ngIf="f['price'].errors?.['required']">El precio es requerido.</div>
-        <div *ngIf="f['price'].errors?.['min']">El precio debe ser mayor que 0.</div>
-      </div>
+      @if (f['price'].invalid && (f['price'].dirty || f['price'].touched)) {
+        <div class="text-red-600 text-sm mt-1">
+          @if (f['price'].errors?.['required']) {
+            <div>El precio es requerido.</div>
+          }
+          @if (f['price'].errors?.['min']) {
+            <div>El precio debe ser mayor que 0.</div>
+          }
+        </div>
+      }
     </div>
 
     <!-- Campo Stock -->
@@ -39,9 +51,13 @@
       <input type="number" id="stockQuantity" formControlName="stockQuantity" min="0"
              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
              [ngClass]="{ 'border-red-500': f['stockQuantity'].invalid && (f['stockQuantity'].dirty || f['stockQuantity'].touched) }">
-       <div *ngIf="f['stockQuantity'].invalid && (f['stockQuantity'].dirty || f['stockQuantity'].touched)" class="text-red-600 text-sm mt-1">
-         <div *ngIf="f['stockQuantity'].errors?.['min']">El stock no puede ser negativo.</div>
-      </div>
+      @if (f['stockQuantity'].invalid && (f['stockQuantity'].dirty || f['stockQuantity'].touched)) {
+        <div class="text-red-600 text-sm mt-1">
+          @if (f['stockQuantity'].errors?.['min']) {
+            <div>El stock no puede ser negativo.</div>
+          }
+        </div>
+      }
     </div>
   </div>
 
@@ -54,13 +70,19 @@
               class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               [ngClass]="{ 'border-red-500': f['categoryId'].invalid && (f['categoryId'].dirty || f['categoryId'].touched) }">
         <option value="" disabled>Selecciona una categoría...</option>
-        <option *ngFor="let category of categories$ | async" [value]="category.id">
-          {{ category.name }}
-        </option>
+        @for (category of categories$ | async; track category.id) {
+          <option [value]="category.id">
+            {{ category.name }}
+          </option>
+        }
       </select>
-      <div *ngIf="f['categoryId'].invalid && (f['categoryId'].dirty || f['categoryId'].touched)" class="text-red-600 text-sm mt-1">
-        <div *ngIf="f['categoryId'].errors?.['required']">La categoría es requerida.</div>
-      </div>
+      @if (f['categoryId'].invalid && (f['categoryId'].dirty || f['categoryId'].touched)) {
+        <div class="text-red-600 text-sm mt-1">
+          @if (f['categoryId'].errors?.['required']) {
+            <div>La categoría es requerida.</div>
+          }
+        </div>
+      }
     </div>
 
     <!-- Campo Carga de Imagen -->
@@ -74,10 +96,12 @@
                     file:bg-indigo-50 file:text-indigo-700
                     hover:file:bg-indigo-100">
       <!-- Vista Previa de la Imagen -->
-      <div *ngIf="imagePreviewUrl" class="mt-4">
-        <p class="text-sm text-gray-600 mb-2">Vista previa:</p>
-        <img [src]="imagePreviewUrl" alt="Vista previa de la imagen" class="max-h-40 rounded border border-gray-300">
-      </div>
+      @if (imagePreviewUrl) {
+        <div class="mt-4">
+          <p class="text-sm text-gray-600 mb-2">Vista previa:</p>
+          <img [src]="imagePreviewUrl" alt="Vista previa de la imagen" class="max-h-40 rounded border border-gray-300">
+        </div>
+      }
     </div>
   </div>
 

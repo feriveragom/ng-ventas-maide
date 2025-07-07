@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Para ngIf, ngClass
+import { NgClass } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // Para Reactive Forms
 import { Router, ActivatedRoute } from '@angular/router'; // Para redirigir después del login
 import { take } from 'rxjs/operators';
@@ -9,7 +9,8 @@ import { AuthService } from '../../../../core/services/auth.service'; // Importa
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule], // Importar módulos necesarios
+  // Solo importamos lo necesario en lugar de CommonModule
+  imports: [NgClass, ReactiveFormsModule],
   templateUrl: './login.component.html',
   // styleUrl: '' // Eliminado completamente
 })
@@ -76,4 +77,4 @@ export class LoginComponent implements OnInit {
       this.isLoading = false;
     }
   }
-} 
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Observable, catchError, of, startWith, map } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { CategoryService } from '../../../../../core/services/category.service';
 @Component({
   selector: 'app-admin-category-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [AsyncPipe, RouterLink],
   templateUrl: './admin-category-list.component.html',
   styleUrls: ['./admin-category-list.component.scss']
 })

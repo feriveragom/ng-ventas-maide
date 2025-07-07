@@ -6,10 +6,16 @@
     <input type="text" id="name" formControlName="name"
            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
            [ngClass]="{ 'border-red-500': f['name'].invalid && (f['name'].dirty || f['name'].touched) }">
-    <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="text-red-600 text-sm mt-1">
-      <div *ngIf="f['name'].errors?.['required']">El nombre es requerido.</div>
-      <div *ngIf="f['name'].errors?.['minlength']">Debe tener al menos 2 caracteres.</div>
-    </div>
+    @if (f['name'].invalid && (f['name'].dirty || f['name'].touched)) {
+      <div class="text-red-600 text-sm mt-1">
+        @if (f['name'].errors?.['required']) {
+          <div>El nombre es requerido.</div>
+        }
+        @if (f['name'].errors?.['minlength']) {
+          <div>Debe tener al menos 2 caracteres.</div>
+        }
+      </div>
+    }
   </div>
 
   <!-- Botón de Envío -->
@@ -20,4 +26,4 @@
     </button>
   </div>
 
-</form> 
+</form>

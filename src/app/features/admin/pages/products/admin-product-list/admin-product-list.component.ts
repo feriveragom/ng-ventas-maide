@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, OnDestroy, AfterViewInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common'; // Para async pipe, ngIf, ngFor
+import { CurrencyPipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router'; // Para navegación y routerLink
 import { Observable, Subject, combineLatest, of } from 'rxjs';
 import { map, catchError, startWith, takeUntil, tap } from 'rxjs/operators';
@@ -35,8 +35,9 @@ interface ProductListState {
   selector: 'app-admin-product-list',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
+    // Solo importamos lo necesario en lugar de CommonModule
+    CurrencyPipe, // Para el pipe de moneda en la tabla
+    RouterModule, // Para routerLink
     // Módulos de Material
     MatTableModule,
     MatPaginatorModule,
@@ -100,7 +101,7 @@ export class AdminProductListComponent implements OnInit, OnDestroy, AfterViewIn
         (data.name ?? '') +
         (data.sku ?? '') +
         (data.categoryName ?? '') +
-        (data.price?.toString() ?? '') + 
+        (data.price?.toString() ?? '') +
         (data.stockQuantity?.toString() ?? '')
       ).toLowerCase();
       // Retorna true si la cadena de datos incluye el texto del filtro
@@ -120,8 +121,6 @@ export class AdminProductListComponent implements OnInit, OnDestroy, AfterViewIn
           categoryName: categoryMap.get(product.categoryId)
         }));
         this.dataSource.data = data;
-        // Es necesario forzar la detección de cambios si usamos OnPush
-        // this.cdRef.markForCheck(); 
         return { loading: false, error: null, data: data };
       }),
       startWith({ loading: true, error: null, data: [] }), // Estado inicial de carga

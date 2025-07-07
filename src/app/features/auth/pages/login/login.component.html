@@ -8,10 +8,16 @@
         <input type="email" placeholder="Email" id="email" formControlName="email"
                class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                [ngClass]="{ 'border-red-500': f['email'].invalid && (f['email'].dirty || f['email'].touched) }">
-        <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" class="text-red-600 text-xs mt-1">
-          <div *ngIf="f['email'].errors?.['required']">El email es requerido.</div>
-          <div *ngIf="f['email'].errors?.['email']">Introduce un email válido.</div>
-        </div>
+        @if (f['email'].invalid && (f['email'].dirty || f['email'].touched)) {
+          <div class="text-red-600 text-xs mt-1">
+            @if (f['email'].errors?.['required']) {
+              <div>El email es requerido.</div>
+            }
+            @if (f['email'].errors?.['email']) {
+              <div>Introduce un email válido.</div>
+            }
+          </div>
+        }
       </div>
       <!-- Password -->
       <div class="mt-4">
@@ -19,14 +25,20 @@
         <input type="password" placeholder="Contraseña" id="password" formControlName="password"
                class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                [ngClass]="{ 'border-red-500': f['password'].invalid && (f['password'].dirty || f['password'].touched) }">
-        <div *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched)" class="text-red-600 text-xs mt-1">
-          <div *ngIf="f['password'].errors?.['required']">La contraseña es requerida.</div>
-        </div>
+        @if (f['password'].invalid && (f['password'].dirty || f['password'].touched)) {
+          <div class="text-red-600 text-xs mt-1">
+            @if (f['password'].errors?.['required']) {
+              <div>La contraseña es requerida.</div>
+            }
+          </div>
+        }
       </div>
       <!-- Error Message -->
-      <div *ngIf="errorMessage" class="mt-4 text-red-600 text-sm">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="mt-4 text-red-600 text-sm">
+          {{ errorMessage }}
+        </div>
+      }
       <!-- Submit Button -->
       <div class="flex items-baseline justify-between mt-6">
         <button type="submit" [disabled]="loginForm.invalid || isLoading"
@@ -36,4 +48,4 @@
       </div>
     </form>
   </div>
-</div> 
+</div>
